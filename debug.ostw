@@ -1,0 +1,93 @@
+rule: "[DEBUG] Show standing locations"
+Event.OnPlayerJoin
+{
+  CreateHudText(
+    !(LocalPlayer() == null) ? EventPlayer() : null,
+    PositionOf(), null, null,
+    Location.Left,
+    0,
+    Color.White, null, null,
+    HudTextRev.VisibleToAndString,
+    Spectators.VisibleNever
+  );
+}
+
+rule: "[DEBUG] Shorten assemble heroes"
+if (IsAssemblingHeroes())
+{
+  SetMatchTime(.5);
+}
+
+// rule: "DEBUG: show if using ultimate"
+// Event.OngoingPlayer
+// {
+//   CreateHudText(
+//     EventPlayer(),
+//     $"Is Using Ultimate:  {IsUsingUltimate()}",
+//   );
+// }
+
+// rule: "DEBUG: Measure time using ability 1"
+// Event.OngoingPlayer
+// if (IsUsingUltimate())
+// {
+//   Number timestamp = TotalTimeElapsed();
+//   SmallMessage(EventPlayer(), $"Started using Ultimate at {timestamp}");
+//   WaitUntil(!IsUsingUltimate(), 99999);
+//   Number endTimestamp = TotalTimeElapsed();
+//   SmallMessage(EventPlayer(), $"Ultimate lasted for {endTimestamp - timestamp}s ({(endTimestamp - timestamp) / 0.016}  ticks)");
+// }
+
+// rule: "[DEBUG] Create dummy bot (crouch = enemy)"
+// Event.OngoingPlayer
+// if (EventPlayer() == HostPlayer())
+// if (IsButtonHeld(Button: Button.Melee))
+// {
+//   if (IsButtonHeld(Button: Button.Crouch)) {
+//     CreateDummyBot(
+//       Hero.Brigitte,
+//       OppositeTeamOf(TeamOf()),
+//       5,
+//       PositionOf(),
+//       FacingDirectionOf()
+//     );
+//   } else {
+//     CreateDummyBot(
+//       Hero.Brigitte,
+//       TeamOf(),
+//       5,
+//       PositionOf(),
+//       FacingDirectionOf()
+//     );
+//   }
+//   MinWait();
+//   // SetMaxHealth(LastCreatedEntity(), 500);
+// }
+
+// rule: "[DEBUG] Hold interact to deal self-damage"
+// Event.OngoingPlayer
+// if (IsButtonHeld(EventPlayer(), Button.Interact))
+// {
+//   StartDamageOverTime(EventPlayer(), null, 0.25, 200);
+//   Wait(0.25, WaitBehavior.AbortWhenFalse);
+//   Loop();
+// }
+
+globalvar Player bot;
+
+rule: "[DEBUG] Press Interact to simulate bot"
+Event.OngoingPlayer
+if (IsButtonHeld(Button: Button.Interact))
+{
+  bot = CreateDummyBot(Hero.Genji, Team.Team1, 0, PositionOf(EventPlayer()) + Up() + FacingDirectionOf() * 5, -1 * FacingDirectionOf());
+  WaitUntil(HasSpawned(bot) && !HasStatus(bot, Status.PhasedOut), 5);
+  SetUltimateCharge(bot, 100);
+  PressButton(bot, Button.Ultimate);
+  // WaitUntil(HasStatus(EventPlayer(), Status.KnockedDown), 5);
+  StartHoldingButton(bot, Button.PrimaryFire);
+  WaitUntil(!IsUsingUltimate(bot), 15);
+  Wait(2);
+  // Kill(EventPlayer(), bot);
+  // WaitUntil(IsAlive(), 10);
+  DestroyDummyBot(Team.Team1, 0);
+}

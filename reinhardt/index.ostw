@@ -1,0 +1,35 @@
+rule: "Reinhardt setup"
+Event.OngoingPlayer
+Team.Team2
+Player.Reinhardt
+{
+  // SetMaxHealth(EventPlayer(), 400);
+  AddHealthPoolToPlayer(EventPlayer(), HealthType.Health, 2800);
+  AddHealthPoolToPlayer(EventPlayer(), HealthType.Armor, 2750);
+  StartModifyingHeroVoiceLines(EventPlayer(), 0.75, false);
+  // SetKnockbackReceived(EventPlayer(), 75);
+  // StartScalingPlayer(EventPlayer(), 1.2, false);
+}
+
+Number ENVIRONMENTAL_HEALTH_DEDUCTION: 2000;
+
+rule: "If Rein yeets himself off the map, respawn him with -2000 HP"
+Event.OnDeath
+Team.Team2
+Player.Reinhardt
+if (EventWasEnvironment())
+{
+  if (EventDamage() <= ENVIRONMENTAL_HEALTH_DEDUCTION) {
+    if (IsGameInProgress()) ModifyTeamScore(Team.Team1, 1);
+    return;
+  }
+  Respawn(EventPlayer());
+  WaitUntil(IsAlive(), 10);
+  SetPlayerHealth(EventPlayer(), EventDamage() - ENVIRONMENTAL_HEALTH_DEDUCTION);
+}
+
+import "firestrike.ostw";
+
+import "chargeIgnition.ostw";
+
+import "ultimate.ostw";

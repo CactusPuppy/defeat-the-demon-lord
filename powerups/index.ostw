@@ -1,0 +1,149 @@
+import "../mapData/shared.del";
+import "index.del";
+import "speedBoost.ostw";
+import "ultimate.ostw";
+
+playervar Number collectedPowerupIndex;
+
+rule: "When Reinhardt gets close enough to a powerup, set the touched time and apply effects"
+Event.OngoingPlayer
+Team.Team2
+if (powerups.IsTrueForAny((powerup) => DistanceBetween(EventPlayer(), powerup.location) < POWERUP_PICKUP_DISTANCE && TotalTimeElapsed() >= powerup.nextAvailableTimestamp))
+{
+  Number distanceToClosestPowerup = powerups.Map((powerup) => DistanceBetween(EventPlayer(), powerup.location)).SortedArray((distance) => distance).First;
+  collectedPowerupIndex = IndexOfArrayValue(powerups.Map((powerup) => DistanceBetween(EventPlayer(), powerup.location)), distanceToClosestPowerup);
+
+  switch (powerups[collectedPowerupIndex].powerupType) {
+    case PowerupType.SPEED:
+      speedPowerupTimer = 5;
+      ChaseVariableAtRate(speedPowerupTimer, 0, 1, RateChaseReevaluation.None);
+      # Play pickup effects
+      PlayEffect(
+        VisibleTo: AllPlayers(),
+        Type: PlayEffect.OrisaHaltImplosionEffect,
+        Color: <Color>TeamOf(),
+        Position: powerups[EvaluateOnce(collectedPowerupIndex)].location + 1.5 * Up(),
+        Radius: 1
+      );
+      PlayEffect(
+        VisibleTo: AllPlayers(),
+        Type: PlayEffect.OrisaHaltImplosionSound,
+        Color: <Color>TeamOf(),
+        Position: powerups[EvaluateOnce(collectedPowerupIndex)].location + 1.5 * Up(),
+        Radius: 100
+      );
+      # Set when this powerup will become available again
+      powerups[collectedPowerupIndex].nextAvailableTimestamp = TotalTimeElapsed() + SPEED_POWERUP_COOLDOWN;
+      break;
+    case PowerupType.ULTIMATE_CHARGE:
+      # If already has ult, DO NOT COLLECT POWERUP, and DO NOT execute cleanup
+      if (UltimateChargePercent() >= 100) return;
+      # Play pickup effects
+      PlayEffect(
+        VisibleTo: AllPlayers(),
+        Type: PlayEffect.BrigitteRepairPackImpactEffect,
+        Color: <Color>TeamOf(),
+        Position: powerups[EvaluateOnce(collectedPowerupIndex)].location + 1.5 * Up(),
+        Radius: 1
+      );
+      async PlayTorbOverloadSound();
+      # Increment charge packs collected. Separate rule will update ult charge
+      SetUltimateCharge(EventPlayer(), UltimateChargePercent(EventPlayer()) + (1 / ULT_CHARGE_PACKS_FOR_ULT * 100));
+      # Set when this powerup will become available again
+      powerups[collectedPowerupIndex].nextAvailableTimestamp = TotalTimeElapsed() + ULTIMATE_CHARGE_POWERUP_COOLDOWN;
+      break;
+  }
+
+  Wait(0.1, WaitBehavior.AbortWhenFalse);
+  LoopIfConditionIsTrue();
+}
+
+void PlayTorbOverloadSound() "[SUB] Play Torb overload sound for a brief period of time" {
+  Any torbOverloadSFX;
+  if (EntityExists(torbOverloadSFX)) DestroyEffect(torbOverloadSFX);
+  torbOverloadSFX = CreateEffect(
+    VisibleTo: AllPlayers(),
+    Type: Effect.TorbjornOverloadingSound,
+    Color: <Color>TeamOf(),
+    Position: powerups[EvaluateOnce(collectedPowerupIndex)].location + 1.5 * Up(),
+    Radius: 200
+  );
+  Wait(0.5);
+  DestroyEffect(torbOverloadSFX);
+}
+
+globalvar Number powerupIndex;
+
+rule: "Create effects to indicate powerups once map data is loaded"
+if (mapDataLoadedFlag)
+{
+  for (powerupIndex = 0; powerups.Length; 1) {
+    Color powerupColor = powerups[powerupIndex].getColor();
+    Number maxCooldown = powerups[powerupIndex].getMaxCooldown();
+    String powerupIcon = powerups[powerupIndex].getPowerupIcon();
+    # Outer bounds indicator
+    CreateEffect(
+      VisibleTo: AllPlayers(),
+      Type: Effect.Ring,
+      Color: powerups[EvaluateOnce(powerupIndex)].nextAvailableTimestamp <= TotalTimeElapsed() ? (TeamOf(LocalPlayer()) == Team.Team2 ? EvaluateOnce(powerupColor) : Color.Gray) : Color.White,
+      Position: powerups[EvaluateOnce(powerupIndex)].location,
+      Radius: 0.7,
+      Reevaluation: EffectRev.VisibleToAndColor
+    );
+    # Inner \"refresh\" indicator
+    CreateEffect(
+      VisibleTo: powerups[EvaluateOnce(powerupIndex)].nextAvailableTimestamp <= TotalTimeElapsed() ? null : AllPlayers(),
+      Type: Effect.Ring,
+      Color: (TeamOf(LocalPlayer()) == Team.Team2 ? EvaluateOnce(powerupColor) : Color.Gray),
+      Position: powerups[EvaluateOnce(powerupIndex)].location,
+      Radius: 0.7 * (1 - Max(powerups[EvaluateOnce(powerupIndex)].nextAvailableTimestamp - TotalTimeElapsed(), 0) / (EvaluateOnce(maxCooldown))),
+      Reevaluation: EffectRev.VisibleToPositionRadiusAndColor
+    );
+    # Pickup visual 01
+    CreateEffect(
+      VisibleTo: powerups[EvaluateOnce(powerupIndex)].nextAvailableTimestamp <= TotalTimeElapsed() ? AllPlayers() : null,
+      Type: Effect.GoodAura,
+      Color: powerups[EvaluateOnce(powerupIndex)].nextAvailableTimestamp <= TotalTimeElapsed() ? (TeamOf(LocalPlayer()) == Team.Team2 ? EvaluateOnce(powerupColor) : Color.Gray) : Color.Black,
+      Position: powerups[EvaluateOnce(powerupIndex)].location + 1.5 * Up(),
+      Radius: 0.4,
+      Reevaluation: EffectRev.VisibleToAndColor
+    );
+    # Pickup visual 02
+    // CreateEffect(
+    //   VisibleTo: powerups[EvaluateOnce(powerupIndex)].nextAvailableTimestamp <= TotalTimeElapsed() ? AllPlayers() : null,
+    //   Type: Effect.Sphere,
+    //   Color: powerups[EvaluateOnce(powerupIndex)].nextAvailableTimestamp <= TotalTimeElapsed() ? EvaluateOnce(powerupColor) : Color.Black,
+    //   Position: powerups[EvaluateOnce(powerupIndex)].location + 1.5 * Up(),
+    //   Radius: 0.3,
+    //   Reevaluation: EffectRev.VisibleToAndColor
+    // );
+    # Pickup visual 03
+    CreateEffect(
+      VisibleTo: powerups[EvaluateOnce(powerupIndex)].nextAvailableTimestamp <= TotalTimeElapsed() ? AllPlayers() : null,
+      Type: Effect.BadAura,
+      Color: powerups[EvaluateOnce(powerupIndex)].nextAvailableTimestamp <= TotalTimeElapsed() ? (TeamOf(LocalPlayer()) == Team.Team2 ? EvaluateOnce(powerupColor) : Color.Gray) : Color.Black,
+      Position: powerups[EvaluateOnce(powerupIndex)].location + 1.5 * Up(),
+      Radius: 0.42,
+      Reevaluation: EffectRev.VisibleToAndColor
+    );
+    # Pickup icon
+    CreateInWorldText(
+      VisibleTo: powerups[EvaluateOnce(powerupIndex)].nextAvailableTimestamp <= TotalTimeElapsed() ? AllPlayers() : null,
+      Header: EvaluateOnce(powerupIcon),
+      Position: powerups[EvaluateOnce(powerupIndex)].location + 1.35 * Up(),
+      Scale: 1.5,
+      Clipping: Clipping.ClipAgainstSurfaces,
+      Reevaluation: InworldTextRev.VisibleToAndPosition,
+      TextColor: Color.Black
+    );
+  }
+}
+
+rule: "When game starts, reset all powerup cooldowns"
+if (IsGameInProgress())
+if (mapDataLoadedFlag)
+{
+  for (powerupIndex = 0; powerups.Length; 1) {
+    powerups[powerupIndex].nextAvailableTimestamp = 0;
+  }
+}

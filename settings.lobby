@@ -1,0 +1,71 @@
+{
+  "Mode Name": "Defeat the Demon Lord",
+  "Description": "Play the part of Demon Lord Reinhardt and burn the kingdom to the ground, or take up arms as one of four courageous warriors looking to end the Demon Lord's terror. Heroes beware, for the Demon King has powerful abilities at his disposal...\n\n- Charge: Sets nearby enemies on fire.\n- Firestrike: Now fires two additional firestrikes in a horizontal spread.\n- Earthshatter: Stuns all enemies in a sphere around Reinhardt. Grants Reinhardt additional damage and speed for some time afterwards.",
+  "Lobby": {
+    "Max Team 1 Players": 4,
+    "Max Team 2 Players": 1
+  },
+  "Heroes": {
+    "Team 1": {
+      "Enabled Heroes": [
+        "Junker Queen",
+        "Orisa",
+        "Tracer",
+        "Genji",
+        "Torbjörn",
+        "Lifeweaver",
+        "Lúcio",
+        "Kiriko"
+      ],
+      "Lifeweaver": {
+        "Movement Speed": 130,
+        "No Ammunition Requirement": true
+      },
+      "Junker Queen": {
+        "Movement Speed": 130
+      },
+      "Orisa": {
+        "Energy Javelin Cooldown Time": 150,
+        "Javelin Spin Cooldown Time": 150
+      }
+    },
+    "Team 2": {
+      "Enabled Heroes": [
+        "Reinhardt"
+      ],
+      "Reinhardt": {
+        "Movement Speed": 120,
+        "Damage Dealt": 150
+      }
+    }
+  },
+  "Modes": {
+    "All": {
+      "Tank Role Passive Health Bonus": "Disabled",
+      "Limit Roles": "1 Tank 2 Offense 2 Support",
+      "Game Mode Start": "All Slots Filled",
+      "Skins": false
+    },
+    "Team Deathmatch": {
+      "Imbalanced Team Score To Win": true,
+      "Team 1 Score To Win": 3,
+      "Team 2 Score To Win": 30,
+      "Enabled Maps": [
+        "Black Forest",
+        "Black Forest (Winter)",
+        "Eichenwalde",
+        "Eichenwalde (Halloween)"
+      ]
+    }
+  },
+  "Extensions": { // 28 points available
+    "Buff and Debuff Sounds": true, // 2 points
+    "Buff Status Effects": true, // 2 points
+    "Debuff Status Effects": true, // 2 points
+    "Explosion Sounds": true, // 2 points
+    "Energy Explosion Effects": true, // 4 points
+    "Kinetic Explosion Effects": true, // 4 points
+    "Play More Effects": true, // 1 point
+    "Projectiles": true // 4 points
+  }
+}

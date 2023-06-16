@@ -1,0 +1,79 @@
+import "speedBoost.del";
+
+Number EARTHSHATTER_PROPAGATION_SPEED: 20 / .48;
+
+playervar Player earthshatterKnockdownAttacker;
+playervar Boolean isUltimateBuffsActive;
+
+rule: "When Reinhardt ults, tag all enemies to be knocked down at some point, then empower the rein"
+Event.OngoingPlayer
+Team.Team2
+Player.Reinhardt
+if (IsUsingUltimate())
+{
+  PlayersWithinRadius(PositionOf(), 20, OppositeTeamOf(TeamOf()), RadiusLOS.SurfacesAndEnemyBarriers).earthshatterKnockdownAttacker = EventPlayer();
+  PlayEffect(AllPlayers(), PlayEffect.RingExplosion, CustomColor(249, 151, 20, 255), PositionOf(EventPlayer()) + Up(), 40);
+  PlayEffect(AllPlayers(), PlayEffect.DvaSelfDestructExplosionEffect, <Color>TeamOf(), PositionOf(EventPlayer()) + Up(), 20);
+  PlayEffect(AllPlayers(), PlayEffect.DvaSelfDestructExplosionSound,  <Color>TeamOf(), PositionOf(EventPlayer()) + Up(), 60);
+  async EarthshatterBuffs();
+}
+
+rule: "When a player gets hit with Earthshatter natively, if they have the flag, they don't need to be manually handled now"
+Event.OnDamageTaken
+Team.Team1
+if (EventAbility() == Button.Ultimate)
+if (earthshatterKnockdownAttacker)
+{
+  earthshatterKnockdownAttacker = null;
+}
+
+rule: "When a player first gets an earth shatter flag, calculate the distance until being shattered, and wait for the travel time"
+Event.OngoingPlayer
+if (earthshatterKnockdownAttacker != null)
+if (!HasStatus(EventPlayer(), Status.KnockedDown))
+{
+  Wait(DistanceBetween(EventPlayer(), earthshatterKnockdownAttacker) / EARTHSHATTER_PROPAGATION_SPEED + 0.016, WaitBehavior.AbortWhenFalse);
+  SetStatus(EventPlayer(), earthshatterKnockdownAttacker, Status.KnockedDown, 2.75);
+  earthshatterKnockdownAttacker = null;
+}
+
+playervar Any[] ultimateBuffStatusElements;
+enum ReinUltBuffFX {
+  NANO_MATERIAL,
+  NANO_SOUND,
+  MENACING_AURA,
+  PRIMAL_RAGE_SOUND,
+  EXTRA_DAMAGE_MOD
+}
+
+void EarthshatterBuffs() playervar "[SUB] Grant earthshatter buffs to Reinhardt"
+{
+  speedLocks++;
+  ultimateBuffStatusElements[ReinUltBuffFX.NANO_MATERIAL] = CreateEffect(AllPlayers(), Effect.AnaNanoBoostedEffect, <Color>TeamOf(), EventPlayer(), 1, EffectRev.VisibleToPositionAndRadius);
+  ultimateBuffStatusElements[ReinUltBuffFX.NANO_SOUND] = CreateEffect(AllPlayers(), Effect.AnaNanoBoostedSound, <Color>TeamOf(), EventPlayer(), 200, EffectRev.VisibleToPositionAndRadius);
+  ultimateBuffStatusElements[ReinUltBuffFX.MENACING_AURA] = CreateEffect(AllPlayers(OppositeTeamOf(TeamOf())), Effect.BadAura, Color.Red, EventPlayer(), 2, EffectRev.VisibleToPositionAndRadius);
+  ultimateBuffStatusElements[ReinUltBuffFX.PRIMAL_RAGE_SOUND] = CreateEffect(AllPlayers(), Effect.WinstonPrimalRageSound, <Color>TeamOf(), EventPlayer(), 200, EffectRev.VisibleToPositionAndRadius);
+  ultimateBuffStatusElements[ReinUltBuffFX.EXTRA_DAMAGE_MOD] = StartDamageModification(AllPlayers(OppositeTeamOf(TeamOf())), EventPlayer(), 150, DamageModificationRev.ReceiversAndDamagers);
+  isUltimateBuffsActive = true;
+  WaitUntil(IsDead(), 10);
+  isUltimateBuffsActive = false;
+  WaitUntil(IsAlive(), 99999);
+  speedLocks--;
+  for (Number i = 0; i <= ReinUltBuffFX.PRIMAL_RAGE_SOUND; i++) {
+    DestroyEffect(ultimateBuffStatusElements[i]);
+  }
+  StopDamageModification(ultimateBuffStatusElements[ReinUltBuffFX.EXTRA_DAMAGE_MOD]);
+}
+
+rule: "When a Rein has ult buffs and earns a pin elim, shorten charge cooldown to 1 second"
+Event.OnFinalBlow
+Team.Team2
+if (EventAbility() == Button.Ability1)
+{
+  # Just in case it takes a moment to actually start the cooldown
+  Wait(0.032, WaitBehavior.RestartWhenTrue);
+  if (AbilityCooldown(EventPlayer(), Button.Ability1) > 0) SetAbilityCooldown(EventPlayer(), Button.Ability1, 1 - 0.032);
+}
+
+
+

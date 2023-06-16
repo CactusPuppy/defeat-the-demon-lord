@@ -1,0 +1,56 @@
+Number FIRESTRIKE_SPREAD_DELTA: 0.2;
+Number FIRESTRIKE_DAMAGE: 100;
+
+rule: "When Reinhardt firestrikes, create two pseudo-firestrikes to the sides"
+Event.OngoingPlayer
+Team.Team2
+Player.Reinhardt
+if (IsUsingAbility2())
+{
+  WaitUntil(IsDead(), 0.5);
+  AbortIf(IsDead());
+  # Left projectile
+  CreateProjectile(
+    ProjectileType.ReinhardtFireStrike,
+    Player: EventPlayer(),
+    EyePosition() + 0.1 * Normalize(FacingDirectionOf() + FIRESTRIKE_SPREAD_DELTA * WorldVectorOf(Left(), EventPlayer(), LocalVector.Rotation)),
+    FacingDirectionOf() + FIRESTRIKE_SPREAD_DELTA * WorldVectorOf(Left(), EventPlayer(), LocalVector.Rotation),
+    Relative.ToWorld,
+    ModifyHealthType.Damage,
+    OppositeTeamOf(TeamOf()),
+    Amount: FIRESTRIKE_DAMAGE,
+    AmountScalar: 1,
+    ExplosionRadius: 0,
+    PlayEffect.BadExplosion,
+    PlayEffect.ExplosionSound,
+    Oversize: 0,
+    Speed: 25,
+    Lifetime: 15,
+    Impulse: 0,
+    RicochetCount: 0,
+    Gravity: 0
+  );
+  # Right projectile
+  CreateProjectile(
+    ProjectileType.ReinhardtFireStrike,
+    Player: EventPlayer(),
+    EyePosition() + 0.1 * Normalize(FacingDirectionOf() + FIRESTRIKE_SPREAD_DELTA * WorldVectorOf(Right(), EventPlayer(), LocalVector.Rotation)),
+    FacingDirectionOf() + FIRESTRIKE_SPREAD_DELTA * WorldVectorOf(Right(), EventPlayer(), LocalVector.Rotation),
+    Relative.ToWorld,
+    ModifyHealthType.Damage,
+    OppositeTeamOf(TeamOf()),
+    Amount: FIRESTRIKE_DAMAGE,
+    AmountScalar: 1,
+    ExplosionRadius: 0,
+    PlayEffect.BadExplosion,
+    PlayEffect.ExplosionSound,
+    Oversize: 0,
+    Speed: 25,
+    Lifetime: 15,
+    Impulse: 0,
+    RicochetCount: 0,
+    Gravity: 0
+  );
+  Wait(0.62);
+  LoopIfConditionIsTrue();
+}

@@ -1,0 +1,8 @@
+disabled rule: "Remove Orisa's knockback dealt"
+Event.OngoingPlayer
+if (HeroOf() == Hero.Orisa)
+{
+  SetKnockbackDealt(EventPlayer(), 0);
+  WaitUntil(HeroOf() != Hero.Orisa, 999999);
+  SetKnockbackDealt(EventPlayer(), 100);
+}

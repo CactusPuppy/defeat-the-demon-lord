@@ -1,0 +1,24 @@
+Number ULT_CHARGE_PACKS_FOR_ULT: 5;
+
+playervar Number ultChargePacksCollected;
+
+rule: "Reset stacks if Rein reached max charge and is now at 0 (they used ult)"
+Event.OngoingPlayer
+Team.Team2
+if (UltimateChargePercent() == 0)
+if (ultChargePacksCollected == ULT_CHARGE_PACKS_FOR_ULT)
+{
+  ultChargePacksCollected = 0;
+}
+
+rule: "When Rein's ult charge is not what it should be, update it"
+Event.OngoingPlayer
+Team.Team2
+if (UltimateChargePercent() < 100)
+if (UltimateChargePercent() < ultChargePacksCollected / ULT_CHARGE_PACKS_FOR_ULT * 100)
+{
+  SetUltimateCharge(EventPlayer(), ultChargePacksCollected / ULT_CHARGE_PACKS_FOR_ULT * 100);
+  Wait(0.1);
+  LoopIfConditionIsTrue();
+}
+

@@ -1,0 +1,47 @@
+import "shared.del";
+
+void LoadBlackForestMapData() "Set map data for Black Forest"
+{
+  powerups = [
+    {
+      location: Vector(-20.55, 12.09, 5),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.ULTIMATE_CHARGE
+    },
+    {
+      location: Vector(27.1, 16.96, -15.5),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.ULTIMATE_CHARGE
+    },
+    {
+      location: Vector(27.1, 16.96, 25.5),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.ULTIMATE_CHARGE
+    },
+    {
+      location: Vector(18.21, 11.49, -17.12),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.SPEED
+    },
+    {
+      location: Vector(18.21, 11.49, 27.12),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.SPEED
+    },
+    {
+      location: Vector(-10.26, 13, 27),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.SPEED
+    },
+    {
+      location: Vector(-10.26, 13, -17),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.SPEED
+    },
+    {
+      location: Vector(4.64, 12.28, 5),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.SPEED
+    }
+  ];
+}

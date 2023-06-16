@@ -1,0 +1,3 @@
+import "../reinhardt/speedBoost.del";
+
+playervar Boolean attackerSlowLockApplied;

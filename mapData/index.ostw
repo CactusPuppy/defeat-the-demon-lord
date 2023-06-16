@@ -1,0 +1,24 @@
+import "blackForest.del";
+import "eichenwalde.del";
+// import "hanamura.del";
+
+rule: "Map data setup" -1
+{
+  if (ArrayContains([Map.Black_Forest, Map.Black_Forest_Winter], CurrentMap())) {
+    LoadBlackForestMapData();
+    mapDataLoadedFlag = true;
+    return;
+  }
+  if (ArrayContains([Map.Eichenwalde, Map.Eichenwalde_Halloween], CurrentMap())) {
+    LoadEichenwaldeMapData();
+    mapDataLoadedFlag = true;
+    return;
+  }
+  // if (ArrayContains([Map.Hanamura, Map.Hanamura_Winter], CurrentMap())) {
+  //   LoadHanamuraMapData();
+  //   mapDataLoadedFlag = true;
+  //   return;
+  // }
+}
+
+

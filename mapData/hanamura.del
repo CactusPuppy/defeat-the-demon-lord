@@ -1,0 +1,77 @@
+import "shared.del";
+
+void LoadHanamuraMapData() "Set map data for Hanamura"
+{
+  powerups = [
+    {
+      location: Vector(23.07, 6, -12.45),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.ULTIMATE_CHARGE
+    },
+    {
+      location: Vector(13.6, -1, 1.17),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.SPEED
+    },
+    {
+      location: Vector(11.33, -1.08, 32.54),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.SPEED
+    },
+    {
+      location: Vector(-18.95, -1.22, -19.96),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.SPEED
+    },
+    {
+      location: Vector(-7.1, 5, -43.2),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.ULTIMATE_CHARGE
+    },
+    {
+      location: Vector(13.28, -1.81, -38.72),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.SPEED
+    },
+    {
+      location: Vector(42.49, -2.09, -51.59),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.ULTIMATE_CHARGE
+    },
+    {
+      location: Vector(-0.54, -0.13, -74.59),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.SPEED
+    },
+    {
+      location: Vector(-16.66, -0.75, -90.42),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.ULTIMATE_CHARGE
+    },
+    {
+      location: Vector(8.27, 7.01, -88.66),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.SPEED
+    },
+    {
+      location: Vector(-26.07, 1, -60.2),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.SPEED
+    },
+    {
+      location: Vector(31.80, 1.79, -59.95),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.SPEED
+    },
+    {
+      location: Vector(-4.13, 1, -4.98),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.ULTIMATE_CHARGE
+    },
+    {
+      location: Vector(-2.46, 3.99, 24.31),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.SPEED
+    }
+  ];
+}

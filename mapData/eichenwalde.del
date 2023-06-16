@@ -1,0 +1,42 @@
+import "shared.del";
+
+void LoadEichenwaldeMapData() "Set map data for Eichenwalde"
+{
+  powerups = [
+    {
+      location: Vector(44.06, 5.54, -70.23),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.SPEED
+    },
+    {
+      location: Vector(59.63, 18.72, -95.70),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.SPEED
+    },
+    {
+      location: Vector(83.19, 12.68, -87.16),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.SPEED
+    },
+    {
+      location: Vector(101.11, 12.72, -108.76),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.ULTIMATE_CHARGE
+    },
+    {
+      location: Vector(56.79, 21.00, -67.87),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.ULTIMATE_CHARGE
+    },
+    {
+      location: Vector(58.37, 4.72, -88.48),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.ULTIMATE_CHARGE
+    },
+    {
+      location: Vector(55.95, 10.72, -115.75),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.SPEED
+    }
+  ];
+}

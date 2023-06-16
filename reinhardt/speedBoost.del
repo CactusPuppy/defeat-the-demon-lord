@@ -1,0 +1,38 @@
+Number BOOSTED_SPEED_RATIO: 1.50;
+Number SLOWED_SPEED_RATIO: .60;
+playervar Number speedLocks;
+playervar Number previousSpeedLocks;
+playervar Number slowLocks;
+playervar Number previousSlowLocks;
+playervar Any speedEffect = -1;
+playervar Any slowEffect = -1;
+
+rule: "When player has more than one speed lock, create speed effect"
+Event.OngoingPlayer
+if (speedLocks > 0)
+{
+  speedEffect = CreateEffect(AllPlayers(), Effect.LucioSoundBarrierProtectedEffect, <Color>TeamOf(), EventPlayer(), 1, EffectRev.VisibleToAndColor);
+  WaitUntil(speedLocks <= 0, 99999);
+  DestroyEffect(speedEffect);
+}
+
+rule: "When player has more than one slow lock, create slow effect"
+Event.OngoingPlayer
+if (slowLocks > 0)
+{
+  slowEffect = CreateEffect(AllPlayers(), Effect.AnaSleepingEffect, <Color>TeamOf(), EventPlayer(), 1, EffectRev.VisibleTo);
+  WaitUntil(slowLocks <= 0, 99999);
+  DestroyEffect(slowEffect);
+}
+
+rule: "When speedLocks or slowLocks has updated, update Rein's move speed"
+Event.OngoingPlayer
+if (speedLocks != previousSpeedLocks || slowLocks != previousSlowLocks)
+{
+  if (previousSpeedLocks != speedLocks) previousSpeedLocks = speedLocks;
+  if (previousSlowLocks != slowLocks) previousSlowLocks = slowLocks;
+
+  SetMoveSpeed(EventPlayer(), (speedLocks > 0 ? BOOSTED_SPEED_RATIO : 1) * (slowLocks > 0 ? SLOWED_SPEED_RATIO : 1) * 100);
+  MinWait();
+  LoopIfConditionIsTrue();
+}

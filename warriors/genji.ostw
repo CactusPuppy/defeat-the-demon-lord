@@ -1,0 +1,39 @@
+import "shared.del";
+
+Number GENJI_DRAGONBLADE_SLOW_LINGER_SECONDS: 2;
+
+rule: "When Genji does damage to Rein with Ability 2, add a slow lock if necessary"
+Event.OnDamageDealt
+Team.Team1
+# Use a HeroOf check instead of a Player parameter check to ensure cleanup
+if (HeroOf() == Hero.Genji)
+if (EventAbility() == Button.Ultimate)
+{
+  if (!attackerSlowLockApplied) {
+    Victim().slowLocks++;
+  }
+  attackerSlowLockApplied = true;
+  Wait(GENJI_DRAGONBLADE_SLOW_LINGER_SECONDS, WaitBehavior.RestartWhenTrue);
+  Victim().slowLocks--;
+  attackerSlowLockApplied = false;
+}
+
+
+playervar Any genjiUltHealthPool;
+rule: "When Genji blades, give him triple HP while ulting"
+Event.OngoingPlayer
+Team.Team1
+Player.Genji
+if (IsUsingUltimate())
+{
+  genjiUltHealthPool = AddHealthPoolToPlayer(
+    EventPlayer(),
+    HealthType.Health,
+    400,
+    true,
+    false
+  );
+  WaitUntil(!IsUsingUltimate(), 15);
+  RemoveHealthPoolFromPlayer(genjiUltHealthPool);
+}
+

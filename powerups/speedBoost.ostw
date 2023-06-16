@@ -1,0 +1,15 @@
+import "index.ostw";
+import "../reinhardt/speedBoost.del";
+
+playervar Number speedPowerupTimer;
+
+rule: "Chase speedPowerupTimer"
+Event.OngoingPlayer
+if (speedPowerupTimer > 0)
+{
+  ChaseVariableAtRate(speedPowerupTimer, 0, 1, RateChaseReevaluation.None);
+  speedLocks++;
+  WaitUntil(speedPowerupTimer == 0, 99999);
+  StopChasingVariable(speedPowerupTimer);
+  speedLocks--;
+}

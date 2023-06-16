@@ -1,0 +1,38 @@
+import "settings.lobby";
+
+import "mapData/index.ostw";
+
+// import "debug.ostw";
+
+rule: "Global setup"
+{
+  # We need to disable the vanilla scoring for handling of when the Rein is yote off the map
+  DisableScoring();
+}
+
+rule: "Player setup"
+Event.OnPlayerJoin
+{
+  # The healthbar UI messes up the scoreboard, so we have to remove that unfortunately
+  // DisableGameModeHud();
+}
+
+rule: "Increment Team 2 score on Team 1 death"
+Event.OnDeath
+Team.Team1
+if (IsGameInProgress())
+{
+  ModifyTeamScore(Team.Team2, 1);
+}
+
+rule: "Increment Team 1 score ONLY IF final blow was not environmental"
+Event.OnFinalBlow
+Team.Team1
+if (!EventWasEnvironment())
+{
+  ModifyTeamScore(Team.Team1, 1);
+}
+
+import "reinhardt/index.ostw";
+
+import "warriors/index.ostw";

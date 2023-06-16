@@ -1,0 +1,36 @@
+enum PowerupType {
+  NONE,
+  SPEED,
+  ULTIMATE_CHARGE
+}
+
+struct Powerup {
+  public PowerupType powerupType;
+  public Vector location;
+  public Number nextAvailableTimestamp;
+
+  public Color getColor(): [
+    Color.Rose,   // NONE
+    Color.Green,  // Speed
+    Color.Orange  // Ult Charge
+  ][this.powerupType];
+
+  public Number getMaxCooldown(): [
+    10,
+    SPEED_POWERUP_COOLDOWN,
+    ULTIMATE_CHARGE_POWERUP_COOLDOWN
+  ][this.powerupType];
+
+  public String getPowerupIcon(): [
+    IconString(Icon.QuestionMark),                     // NONE
+    AbilityIconString(Hero.Tracer, Button.Ability1),   // Speed
+    AbilityIconString(Hero.Reinhardt, Button.Ultimate) // Ult Charge
+  ][this.powerupType];
+}
+
+Number POWERUP_PICKUP_DISTANCE: 2;
+
+globalvar Powerup[] powerups;
+
+Number SPEED_POWERUP_COOLDOWN: 10;
+Number ULTIMATE_CHARGE_POWERUP_COOLDOWN: 20;
