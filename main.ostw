@@ -2,7 +2,9 @@ import "settings.lobby";
 
 import "mapData/index.ostw";
 
-// import "debug.ostw";
+import "debug.ostw";
+
+// Number distance: 7;
 
 rule: "Global setup"
 {

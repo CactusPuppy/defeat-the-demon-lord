@@ -85,7 +85,7 @@ if (mapDataLoadedFlag)
     CreateEffect(
       VisibleTo: AllPlayers(),
       Type: Effect.Ring,
-      Color: powerups[EvaluateOnce(powerupIndex)].nextAvailableTimestamp <= TotalTimeElapsed() ? (TeamOf(LocalPlayer()) == Team.Team2 ? EvaluateOnce(powerupColor) : Color.Gray) : Color.White,
+      Color: powerups[EvaluateOnce(powerupIndex)].nextAvailableTimestamp <= TotalTimeElapsed() ? (TeamOf(LocalPlayer()) != Team.Team1 ? EvaluateOnce(powerupColor) : Color.Gray) : Color.White,
       Position: powerups[EvaluateOnce(powerupIndex)].location,
       Radius: 0.7,
       Reevaluation: EffectRev.VisibleToAndColor
@@ -103,7 +103,7 @@ if (mapDataLoadedFlag)
     CreateEffect(
       VisibleTo: powerups[EvaluateOnce(powerupIndex)].nextAvailableTimestamp <= TotalTimeElapsed() ? AllPlayers() : null,
       Type: Effect.GoodAura,
-      Color: powerups[EvaluateOnce(powerupIndex)].nextAvailableTimestamp <= TotalTimeElapsed() ? (TeamOf(LocalPlayer()) == Team.Team2 ? EvaluateOnce(powerupColor) : Color.Gray) : Color.Black,
+      Color: powerups[EvaluateOnce(powerupIndex)].nextAvailableTimestamp <= TotalTimeElapsed() ? (TeamOf(LocalPlayer()) != Team.Team1 ? EvaluateOnce(powerupColor) : Color.Gray) : Color.Black,
       Position: powerups[EvaluateOnce(powerupIndex)].location + 1.5 * Up(),
       Radius: 0.4,
       Reevaluation: EffectRev.VisibleToAndColor
@@ -121,7 +121,7 @@ if (mapDataLoadedFlag)
     CreateEffect(
       VisibleTo: powerups[EvaluateOnce(powerupIndex)].nextAvailableTimestamp <= TotalTimeElapsed() ? AllPlayers() : null,
       Type: Effect.BadAura,
-      Color: powerups[EvaluateOnce(powerupIndex)].nextAvailableTimestamp <= TotalTimeElapsed() ? (TeamOf(LocalPlayer()) == Team.Team2 ? EvaluateOnce(powerupColor) : Color.Gray) : Color.Black,
+      Color: powerups[EvaluateOnce(powerupIndex)].nextAvailableTimestamp <= TotalTimeElapsed() ? (TeamOf(LocalPlayer()) != Team.Team1 ? EvaluateOnce(powerupColor) : Color.Gray) : Color.Black,
       Position: powerups[EvaluateOnce(powerupIndex)].location + 1.5 * Up(),
       Radius: 0.42,
       Reevaluation: EffectRev.VisibleToAndColor

@@ -1,6 +1,7 @@
 import "blackForest.del";
 import "eichenwalde.del";
 // import "hanamura.del";
+import "greenScreen.del";
 
 rule: "Map data setup" -1
 {
@@ -19,6 +20,11 @@ rule: "Map data setup" -1
   //   mapDataLoadedFlag = true;
   //   return;
   // }
+  if (CurrentMap() == Map.Workshop_Green_Screen) {
+    LoadGreenScreenMapData();
+    mapDataLoadedFlag = true;
+    return;
+  }
 }
 
 

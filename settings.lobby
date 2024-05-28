@@ -51,10 +51,10 @@
       "Team 1 Score To Win": 3,
       "Team 2 Score To Win": 30,
       "Enabled Maps": [
-        "Black Forest",
-        "Black Forest (Winter)",
+        // "Black Forest",
+        // "Black Forest (Winter)",
         "Eichenwalde",
-        "Eichenwalde (Halloween)"
+        // "Eichenwalde (Halloween)"
       ]
     }
   },

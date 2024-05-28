@@ -1,0 +1,12 @@
+import "shared.del";
+
+void LoadGreenScreenMapData() "Set map data for Green Screen"
+{
+  powerups = [
+    {
+      location: Vector(0,0,0),
+      nextAvailableTimestamp: 0,
+      powerupType: PowerupType.ULTIMATE_CHARGE
+    }
+  ];
+}

@@ -3,10 +3,10 @@ Event.OnPlayerJoin
 {
   CreateHudText(
     !(LocalPlayer() == null) ? EventPlayer() : null,
-    PositionOf(), null, null,
+    PositionOf(), null, FacingDirectionOf(),
     Location.Left,
     0,
-    Color.White, null, null,
+    Color.White, null, Color.White,
     HudTextRev.VisibleToAndString,
     Spectators.VisibleNever
   );
@@ -73,21 +73,78 @@ if (IsAssemblingHeroes())
 //   Loop();
 // }
 
+globalvar Player reinBot;
 globalvar Player bot;
+globalvar Player bot2;
 
-rule: "[DEBUG] Press Interact to simulate bot"
+Boolean botReady(Player bot): HasSpawned(bot) && !HasStatus(bot, Status.PhasedOut);
+
+rule: "[DEBUG] Create bots"
+if (IsWaitingForPlayers() ||IsGameInProgress())
+{
+  bot = CreateDummyBot(Hero.JunkerQueen, Team.Team1, 0, Vector(74, 12.71, -101.31), Vector(0.35, -0.12, 0.93));
+  bot2 = CreateDummyBot(Hero.Lifeweaver, Team.Team1, 1, Vector(62.02, 18.72, -92.66), Vector(0.74, -0.41, -0.54));
+  WaitUntil(botReady(bot), 10);
+  SetStatus(bot, null, Status.Unkillable, 1000000);
+  WaitUntil(botReady(bot2), 10);
+  SetStatus(bot2, null, Status.Unkillable, 1000000);
+}
+
+rule: "[DEBUG] Press Interact to start scenario"
 Event.OngoingPlayer
 if (IsButtonHeld(Button: Button.Interact))
 {
-  bot = CreateDummyBot(Hero.Genji, Team.Team1, 0, PositionOf(EventPlayer()) + Up() + FacingDirectionOf() * 5, -1 * FacingDirectionOf());
-  WaitUntil(HasSpawned(bot) && !HasStatus(bot, Status.PhasedOut), 5);
-  SetUltimateCharge(bot, 100);
-  PressButton(bot, Button.Ultimate);
-  // WaitUntil(HasStatus(EventPlayer(), Status.KnockedDown), 5);
-  StartHoldingButton(bot, Button.PrimaryFire);
-  WaitUntil(!IsUsingUltimate(bot), 15);
-  Wait(2);
-  // Kill(EventPlayer(), bot);
-  // WaitUntil(IsAlive(), 10);
-  DestroyDummyBot(Team.Team1, 0);
+  if (IsDead(bot)) Resurrect(bot);
+  if (IsDead(bot2)) Resurrect(bot2);
+
+  SetAbilityCooldown(bot, Button.Ability2, 0);
+  SetAbilityCooldown(bot2, Button.Ability2, 0);
+
+  Wait(0.064);
+
+  WaitUntil(botReady(bot) && botReady(bot2), 10);
+
+  Teleport(bot, Vector(74, 12.71, -101.31));
+  SetFacing(bot, Vector(0.35, -0.12, 0.93));
+  Teleport(bot2, Vector(62.02, 18.72, -92.66));
+  SetFacing(bot2, Vector(0.74, -0.41, -0.54));
+
+  Wait(0.5);
+  PressButton(bot, Button.Ability2);
+  Wait(0.2);
+  PressButton(EventPlayer(), Button.PrimaryFire);
+  Wait(0.05);
+  PressButton(bot2, Button.Ability2);
+}
+
+rule: "[DEBUG] Hold Interact to end match"
+Event.OngoingPlayer
+if (IsButtonHeld(Button: Button.Interact))
+{
+  Wait(3, WaitBehavior.AbortWhenFalse);
+  DeclareTeamVictory(TeamOf());
+}
+
+rule: "End the game early"
+Event.OngoingPlayer
+if (EventPlayer().IsCommunicating(Communication.Goodbye))
+{
+  DeclareTeamVictory(TeamOf());
+}
+
+rule: "Perform action"
+Event.OngoingPlayer
+if (EventPlayer().IsButtonHeld(Button.Interact))
+{
+  SetUltimateCharge(reinBot, 100);
+  MinWait();
+  PressButton(reinBot, Button.Ultimate);
+}
+
+rule: "Heal dummy bots when they don't take damage for a while"
+Event.OnDamageTaken
+if (IsDummyBot(EventPlayer()))
+{
+  Wait(3, WaitBehavior.RestartWhenTrue);
+  SetPlayerHealth(EventPlayer(), MaxHealth());
 }

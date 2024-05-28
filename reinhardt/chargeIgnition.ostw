@@ -62,7 +62,7 @@ if (IsTrueForAny(AllLivingPlayers(Team.Team2).FilteredArray((player) => player.c
   }
   reinhardtIgnitionDoT = StartDamageOverTime(
     Receivers: EventPlayer(),
-    Damagers: SortedArray(AllLivingPlayers(Team.Team2).FilteredArray((player) => player.chargeCanSetEnemiesOnFire), DistanceBetween(ArrayElement(), EventPlayer())),
+    Damagers: AllLivingPlayers(Team.Team2).FilteredArray((player) => player.chargeCanSetEnemiesOnFire).SortedArray(player => DistanceBetween(player, EventPlayer())).First,
     Duration: CHARGE_IGNITION_DURATION,
     DamagePerSecond: CHARGE_IGNITION_DPS
   );

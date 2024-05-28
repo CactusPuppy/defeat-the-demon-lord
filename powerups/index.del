@@ -4,7 +4,7 @@ enum PowerupType {
   ULTIMATE_CHARGE
 }
 
-struct Powerup {
+single struct Powerup {
   public PowerupType powerupType;
   public Vector location;
   public Number nextAvailableTimestamp;
